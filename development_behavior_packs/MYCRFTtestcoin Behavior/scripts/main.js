@@ -23,14 +23,15 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
         // 1. Stop the game from breaking the block (this also stops the drop)
         event.cancel = true;
 
-        // 2. Get stable references to the block and player
+        // 2. Get stable references to the block, dimension, and player
         const blockLocation = block.location;
-        const dimension = block.dimension;
+        const dimensionId = block.dimension.id;
         const playerId = player.id;
 
         // 3. Schedule the actions for the next tick
         system.run(() => {
-            // Re-fetch the block using its location
+            // Re-fetch the dimension and then the block
+            const dimension = world.getDimension(dimensionId);
             const block = dimension.getBlock(blockLocation);
 
             // Manually break the block (if it still exists)
