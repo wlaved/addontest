@@ -23,20 +23,27 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
         // 1. Stop the game from breaking the block (this also stops the drop)
         event.cancel = true;
 
-        // 2. THIS IS THE FIX:
-        // Schedule the block to be set to air on the very next tick
-        system.run(() => {
-            block.setType("minecraft:air");
-        });
+        // 2. Get the player's ID now, because the 'player' object will be invalid on the next tick
+        const playerId = player.id;
 
-        // 3. Manually award the coin (this is fine)
-        try {
-            const scoreboard = world.scoreboard.getObjective(scoreboardObjectiveId);
-            scoreboard.addScore(player, 1);
-            player.onScreenDisplay.setActionBar("You found a coin!");
-        } catch (error) {
-            console.error("Failed to add score:", error);
-            player.onScreenDisplay.setActionBar("Error: Could not award a coin. Is the scoreboard set up correctly?");
-        }
+        // 3. Schedule the actions for the next tick
+        system.run(() => {
+            // Manually break the block
+            block.setType("minecraft:air");
+
+            // Get a fresh reference to the player using their ID
+            const player = world.getPlayer(playerId);
+
+            // Check if the player is still online before awarding the score
+            if (player) {
+                try {
+                    const scoreboard = world.scoreboard.getObjective(scoreboardObjectiveId);
+                    scoreboard.addScore(player, 1);
+                    player.onScreenDisplay.setActionBar("You found a coin!");
+                } catch (error) {
+                    console.error("Failed to add score:", error);
+                }
+            }
+        });
     }
 });
