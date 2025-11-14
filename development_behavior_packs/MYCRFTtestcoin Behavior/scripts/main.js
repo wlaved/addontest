@@ -23,15 +23,22 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
         // 1. Stop the game from breaking the block (this also stops the drop)
         event.cancel = true;
 
-        // 2. Get the player's ID now, because the 'player' object will be invalid on the next tick
+        // 2. Get stable references to the block and player
+        const blockLocation = block.location;
+        const dimension = block.dimension;
         const playerId = player.id;
 
         // 3. Schedule the actions for the next tick
         system.run(() => {
-            // Manually break the block
-            block.setType("minecraft:air");
+            // Re-fetch the block using its location
+            const block = dimension.getBlock(blockLocation);
 
-            // Get a fresh reference to the player using their ID
+            // Manually break the block (if it still exists)
+            if (block) {
+                block.setType("minecraft:air");
+            }
+
+            // Re-fetch the player using their ID
             const player = world.getPlayer(playerId);
 
             // Check if the player is still online before awarding the score
