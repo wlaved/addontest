@@ -13,13 +13,21 @@ world.afterEvents.playerPlaceBlock.subscribe(event => {
     }
 });
 
-// Subscribe to the player break block event
-world.afterEvents.playerBreakBlock.subscribe(event => {
-    const { brokenBlockPermutation, player } = event;
+// Subscribe to the player break block event (BEFORE it happens)
+world.beforeEvents.playerBreakBlock.subscribe(event => {
+    const { block, player } = event;
 
-    if (brokenBlockPermutation.type.id === blockId) {
+    // Check if it's your coin block
+    if (block.typeId === blockId) {
+
+        // 1. Stop the game from breaking the block (this also stops the drop)
+        event.cancel = true;
+
+        // 2. Manually break the block by setting it to air
+        block.setType("minecraft:air");
+
+        // 3. Manually award the coin (copied from your old code)
         try {
-            // Award a coin to the player
             const scoreboard = world.scoreboard.getObjective(scoreboardObjectiveId);
             scoreboard.addScore(player, 1);
             player.onScreenDisplay.setActionBar("You found a coin!");
