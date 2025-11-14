@@ -1,0 +1,30 @@
+{
+	"format_version": 2,
+	"header": {
+		"name": "MYCRFTtestcoin",
+		"description": "MYCRFTtestcoin Behavior Pack",
+		"uuid": "5a3d2bcd-b924-230e-d6a8-7f3984d22782",
+		"version": [1, 0, 0],
+		"min_engine_version": [1, 16, 0]
+	},
+	"metadata": {
+		"authors": ["kattacomi"],
+		"generated_with": {
+			"blockbench_block_wizard": ["1.5.2"]
+		}
+	},
+	"modules": [
+		{
+			"description": "Behavior",
+			"version": [1, 0, 0],
+			"uuid": "65349fdf-b0d9-0c85-9918-710a0557073d",
+			"type": "data"
+		}
+	],
+	"dependencies": [
+		{
+			"uuid": "6b047e45-8801-11ed-972e-dcb72218403b",
+			"version": [1, 0, 0]
+		}
+	]
+}
