@@ -23,34 +23,24 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
         // 1. Stop the game from breaking the block (this also stops the drop)
         event.cancel = true;
 
-        // 2. Get stable references to the block, dimension, and player
+        // 2. Award the coin and show the message IMMEDIATELY
+        try {
+            const scoreboard = world.scoreboard.getObjective(scoreboardObjectiveId);
+            scoreboard.addScore(player, 1);
+            player.onScreenDisplay.setActionBar("You found a coin!");
+        } catch (error) {
+            console.error("Failed to add score:", error);
+            player.onScreenDisplay.setActionBar("Error: Could not award a coin. Is the scoreboard set up correctly?");
+        }
+
+        // 3. DEFER ONLY the block modification
         const blockLocation = block.location;
         const dimensionId = block.dimension.id;
-        const playerId = player.id;
-
-        // 3. Schedule the actions for the next tick
         system.run(() => {
-            // Re-fetch the dimension and then the block
             const dimension = world.getDimension(dimensionId);
             const block = dimension.getBlock(blockLocation);
-
-            // Manually break the block (if it still exists)
             if (block) {
                 block.setType("minecraft:air");
-            }
-
-            // Re-fetch the player using their ID
-            const player = world.getPlayer(playerId);
-
-            // Check if the player is still online before awarding the score
-            if (player) {
-                try {
-                    const scoreboard = world.scoreboard.getObjective(scoreboardObjectiveId);
-                    scoreboard.addScore(player, 1);
-                    player.onScreenDisplay.setActionBar("You found a coin!");
-                } catch (error) {
-                    console.error("Failed to add score:", error);
-                }
             }
         });
     }
