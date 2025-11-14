@@ -23,10 +23,13 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
         // 1. Stop the game from breaking the block (this also stops the drop)
         event.cancel = true;
 
-        // 2. Manually break the block by setting it to air
-        block.setType("minecraft:air");
+        // 2. THIS IS THE FIX:
+        // Schedule the block to be set to air on the very next tick
+        system.run(() => {
+            block.setType("minecraft:air");
+        });
 
-        // 3. Manually award the coin (copied from your old code)
+        // 3. Manually award the coin (this is fine)
         try {
             const scoreboard = world.scoreboard.getObjective(scoreboardObjectiveId);
             scoreboard.addScore(player, 1);
